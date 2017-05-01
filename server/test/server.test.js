@@ -62,6 +62,7 @@ describe('POST /todos', () => {
 
 }); //describe POST /todos end
 
+//GET Todos
 describe('GET /todos', () => {
   it('should get all todos', (done) => {
   request(app)
@@ -74,6 +75,7 @@ describe('GET /todos', () => {
   });
 });
 
+//GET Todos by Id
 describe('GET /todos:id', () => {
     it('Should return todo doc', (done) => {
       request(app)
@@ -92,7 +94,7 @@ describe('GET /todos:id', () => {
         .get(`/todos/${new ObjectID().toHexString()}`)
         .expect(404)
         .end(done);
-        
+
     }); //it close
 
     it('should return 404 if todo is invalid', (done) => {
@@ -107,3 +109,40 @@ describe('GET /todos:id', () => {
         })
       });
   });
+
+  describe('DELETE /todos:id', () => {
+    it('should remove a todo document', (done) => {
+      var hexId = todos[1]._id.toHexString();
+      request(app)
+        .delete(`/todos/${hexId}`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.todo._id).toBe(hexId);
+        })
+        .end((err, res) => {
+          if(err){
+            return done(err);
+          }
+          Todo.findById(hexId).then((todo) => {
+            expect(todo).toNotExist();
+            done();
+          }).catch((e) => done(e));
+      });
+    });//end of it
+
+    it('should return 404 if todo not found', (done) => {
+      var hexId = new ObjectID().toHexString();
+      request(app)
+        .delete(`/todos/${hexId}`)
+        .expect(404)
+        .end(done);
+    });
+
+    it('should return 404 if ObjectID is invalid', (done) => {
+      var hexId = todos[0]._id.toHexString();
+      request(app)
+        .delete(`/todos/${hexId}11`)
+        .expect(404)
+        .end(done);
+    });
+  });//End of describe
