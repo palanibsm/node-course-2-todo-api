@@ -14,6 +14,7 @@ var port = process.env.PORT;
 
 app.use(bodyParse.json());
 
+//Create new Todo
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text
@@ -21,7 +22,7 @@ app.post('/todos', (req, res) => {
 
   todo.save().then((doc) => {
     res.send(doc);
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
   });
 });
@@ -94,6 +95,81 @@ app.patch('/todos/:id', (req, res) => {
   }, (e) => {
     res.status(400).send(e);
   }).catch((e) => res.status(400).send(e));
+});
+
+//POST /users - Create new user
+app.post('/users', (req,res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then((user) => {
+    // console.log('Stage1',user);
+    return user.generateAuthToken();
+  }).then((token) => {
+      // console.log('Stage2',user);
+      res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+//Get /users - Display all users
+app.get('/users/', (req, res) => {
+  User.find().then((users) => {
+    console.log(users);
+    res.status(200).send({users});
+  }, (e) => {
+    res.status(400).send('Error', e);
+  })
+})
+
+//GET /users:id - Get a User by Id
+app.get('/users/:id', (req, res) => {
+  var id = req.params.id;
+  if (!ObjectID.isValid(id)){
+    return res.status(404).send('Object ID is invalid');
+  }
+  User.findById(id).then((user) => {
+    if (!user){
+      return res.status(404).send('Id is not found...');
+    }
+    res.status(200).send(user);
+  }, (e) => {
+    res.status(400).send(e);
+  })
+});
+
+//DELETE /users/:id - Delete user by Id
+app.delete('/users/:id', (req,res) => {
+  var id = req.params.id;
+  if (!ObjectID.isValid(id)){
+    return res.status(404).send('ObjectId is Invalid');
+  }
+  User.findByIdAndRemove(id).then((user) => {
+    if (!user){
+      return res.status(404).send('Id not found...');
+    }
+    res.status(200).send(user);
+  }, (e) => {
+    res.status(400).send(e);
+  })
+});
+
+//PATCH /users/:id - Update a User by id
+app.patch('/users/:id', (req, res) => {
+  var id = req.params.id;
+  if (!ObjectID.isValid(id)){
+    return res.status(404).send('ObjectId is Invalid...');
+  }
+  var body = _.pick(req.body, ['email', 'password']);
+  User.findByIdAndUpdate(id, {$set: body}, {new: true}).then((user) => {
+    if (!user){
+      return res.status(404).send('Id not found...');
+    }
+    res.status(200).send(user);
+  }, (e) => {
+    res.status(400).send(e);
+  })
 });
 
 app.listen(port, () => {
