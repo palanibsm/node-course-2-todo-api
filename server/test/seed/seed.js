@@ -19,7 +19,7 @@ var userTwoId = new ObjectID();
 
 var users = [{
   _id: userOneId,
-  email: 'staff2@rydesharing.com',
+  email: 'userOneId@rydesharing.com',
   password: 'userOnePass',
   tokens: [{
       'access': 'auth',
@@ -28,7 +28,7 @@ var users = [{
   ]
 },{
   _id: userTwoId,
-  email: 'staff1@rydesharing.com',
+  email: 'userTwoId@rydesharing.com',
   password: 'userTwoPass'
 }];
 

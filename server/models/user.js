@@ -46,7 +46,9 @@ UserSchema.methods.generateAuthToken = function (){
   var access = 'auth';
   var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.saltSecret).toString();
 
+  console.log(token);
   user.tokens.push({access, token});
+  console.log(user.tokens[0]);
 
   return user.save().then(() => {
     return token;
