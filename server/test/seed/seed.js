@@ -4,16 +4,6 @@ var {User} = require('./../../models/user');
 const jwt = require('jsonwebtoken');
 require('./../../config/config.js');
 
-var todos = [{
-  _id: new ObjectID(),
-  text: 'First test Todo...'
-  }, {
-  _id: new ObjectID(),
-  text: 'Second test Todo...',
-  completed: true,
-  completedAt: 333
-}];
-
 var userOneId = new ObjectID();
 var userTwoId = new ObjectID();
 
@@ -29,7 +19,24 @@ var users = [{
 },{
   _id: userTwoId,
   email: 'userTwoId@rydesharing.com',
-  password: 'userTwoPass'
+  password: 'userTwoPass',
+  tokens: [{
+      'access': 'auth',
+      'token': jwt.sign({_id: userTwoId, access: 'auth'}, process.env.saltSecret).toString()
+    }
+  ]
+}];
+
+var todos = [{
+  _id: new ObjectID(),
+  text: 'First test Todo...',
+  _creator: userOneId
+  }, {
+  _id: new ObjectID(),
+  text: 'Second test Todo...',
+  completed: true,
+  completedAt: 333,
+  _creator: userTwoId
 }];
 
 const populateTodos = (done) => {
