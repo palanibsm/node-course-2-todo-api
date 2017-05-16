@@ -45,7 +45,12 @@ UserSchema.methods.generateAuthToken = function (){
   var user = this;
   var access = 'auth';
   console.log('before jwt');
-  var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+  try {
+      var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+  } catch (e) {
+    console.log(e);
+  };
+
 
   console.log(token);
   user.tokens.push({access, token});
@@ -54,7 +59,7 @@ UserSchema.methods.generateAuthToken = function (){
   return user.save().then(() => {
     return token;
   });
-}.catch((e) => console.log(e));
+};
 
 UserSchema.methods.removeToken = function (token) {
   var user = this;
