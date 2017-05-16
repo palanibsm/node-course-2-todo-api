@@ -54,7 +54,7 @@ UserSchema.methods.generateAuthToken = function (){
   return user.save().then(() => {
     return token;
   });
-};
+}.catch((e) => console.log(e));
 
 UserSchema.methods.removeToken = function (token) {
   var user = this;
