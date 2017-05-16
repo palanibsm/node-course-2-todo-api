@@ -44,19 +44,19 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.generateAuthToken = function (){
   var user = this;
   var access = 'auth';
-  console.log('before jwt', user._id);
-  console.log('process.env.JWT_SECRET', process.env.JWT_SECRET);
-  try {
-      var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
-  } catch (e) {
-    console.log(e);
-    var token = "";
-  };
+  // console.log('before jwt', user._id);
+  // console.log('process.env.JWT_SECRET', process.env.JWT_SECRET);
+  // try {
+  var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+  // } catch (e) {
+  //   console.log(e);
+  //   var token = "";
+  // };
 
 
-  console.log(token);
+  // console.log(token);
   user.tokens.push({access, token});
-  console.log(user.tokens[0]);
+  // console.log(user.tokens[0]);
 
   return user.save().then(() => {
     return token;
